@@ -46,11 +46,13 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($shortLinks as $row)
+            @foreach($shortLinks as $link)
             <tr>
-              <td>{{ $row->id }}</td>
-              <td><a href="{{ route('shorten.link', $row->code) }}" target="_blank">{{ route('shorten.link', $row->code) }}</a></td>
-              <td>{{ $row->link }}</td>
+              <td>{{ $link->id }}</td>
+              <td>
+                <a href="{{ route('short.link', $link->code) }}" target="_blank">{{ route('short.link', $link->code) }}</a>
+              </td>
+              <td>{{ $link->link }}</td>
             </tr>
             @endforeach
           </tbody>
