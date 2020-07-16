@@ -13,11 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('generate-shorten', 'ShortLinkController@index');
+Route::get('/', 'ShortLinkController@index');
 Route::post('generate-shorten', 'ShortLinkController@store');
 
-Route::get('{code}', 'ShortLinkController@shortenLink')->name('short.link');
+// Route::get('{code}', 'ShortLinkController@shortenLink');
+Route::get('{code}', 'ShortLinkController@linkJson');

@@ -50,7 +50,7 @@
             <tr>
               <td>{{ $link->id }}</td>
               <td>
-                <a href="{{ route('short.link', $link->code) }}" target="_blank">{{ route('short.link', $link->code) }}</a>
+                <a href="{{ url($link->code) }}" target="_blank">{{ url($link->code) }}</a>
               </td>
               <td>{{ $link->link }}</td>
             </tr>
