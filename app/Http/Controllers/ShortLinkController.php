@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use App\ShortLink;
 
@@ -21,58 +22,63 @@ class ShortLinkController extends Controller
             'link' => 'required|url'
         ]);
 
-        $regexp = "/^[0-9a-zA-Z_]{6}$/";
-        $shortCode = Str::random(6);
-        // $shortCode = 'aHm6BO';
+        $regexp    = "/^[0-9a-zA-Z_]{6}$/";
+        // $shortCode = Str::random(6);
+        $shortCode = 'utoVTA';
 
-        // if (preg_match($regexp, $shortCode))
-        // {
-        //     $res = json_encode(['shortcode' => $shortCode]);
-        //     $rescode = 201;
-        // } else {
-        //     $msg = 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$.';
-        //     $res = json_encode(['error' => $msg]);
-        //     $rescode = 422;
-        // }
+        $res = json_encode(['shortcode' => $shortCode]);
+        $rescode = 201;
+        
+        $existCode = $this->cekCode($shortCode);
+        dd($this->cekUrl($request->link));
+        // dd($existCode);
 
-        // $input['link'] = $request->link;
-        // $input['code'] = $shortCode;
-        if ($this->cekLink($shortCode)) {
-            
+        if ($this->cekUrl($request->link) == 400) {
+            $msg = 'url is not present';
+            $res = json_encode(['error' => $msg]);
+            $rescode = 400;       
+        } else if ($existCode) {
+            $msg = 'The desired shortcode is already in use. Shortcodes are case-sensitive.';
+            $res = json_encode(['error' => $msg]);
+            $rescode = 409;
+        } else if (!preg_match($regexp, $shortCode)) {
+            $msg = 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$.';
+            $res = json_encode(['error' => $msg]);
+            $rescode = 422;
+        } else {
+            $input['url']       = $request->link;
+            $input['shortcode'] = $shortCode;
+    
+            ShortLink::create($input);
         }
-        // return $res;
-        // ShortLink::create($input);
-        // return response($res, $rescode)->header('Content-Type', 'application/json');
+
+
+        return response($res, $rescode)->header('Content-Type', 'application/json');
         // return redirect('/')->with('success', 'Shorten Link Generated Successfully!');
     }
 
     public function shortenLink($code)
     {
-        $find = ShortLink::where('code', $code)->first();
-        // dd($find);
-        return redirect($find->link);
-    }
+        $find = ShortLink::where('shortcode', $code)->first();
 
-    public function linkJson($code)
+        return redirect($find->url);
+    }
+    
+    private function cekCode($shortCode)
     {
-        $find = ShortLink::where('code', $code)->first();
-        $res = json_encode(['shortcode' => $find->code]);
+        $code = ShortLink::where('shortcode', $shortCode)->get();
         
-        return response($res,201)->header('Content-Type', 'application/json');
+        if (@$cekCode->code == $shortCode) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    public function cekLink($shortLink)
+    private function cekUrl($url)
     {
-        $cekCode = ShortLink::where('code', $shortLink)->first();
-        // dd($cekCode);
-        return isset($cekCode);
+        $data = Http::get($url);
 
-        // if (@$cekCode->code == $shortLink) {
-        //     return 'Ada '.$shortLink;
-        // } else {
-        //     return 'Tidak Ada '.$shortLink;
-        // }
-        // return @$cekCode->code == $shortLink;
-        // dd($cekCode);
+        return $data->status();
     }
 }

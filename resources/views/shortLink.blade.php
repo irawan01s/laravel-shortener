@@ -17,11 +17,11 @@
   <div class="container">
 
     <h1 class="d-flex justify-content-center mt-5">Shortener URL Laravel 7</h1>
-    <form method="POST" action="{{ url('generate-shorten') }}">
+    <form method="POST" action="{{ url('shorten') }}">
       @csrf
-      <div class="input-group mb-3">
+      <div class="input-group mx-auto col-8 mb-3 mt-5">
         <input type="text" name="link" class="form-control{{ $errors->has('link') ? ' is-invalid' : '' }}"
-          placeholder="Input Link" aria-label="Input Link" aria-describedby="btn-input-url" value="{{ old('link') }}">
+          placeholder="Input Url" aria-label="Input Url" aria-describedby="btn-input-url" value="{{ old('link') }}">
         <div class="input-group-append">
           <button class="btn btn-primary" type="submit" id="btn-input-url">Generate Link</button>
         </div>
@@ -50,9 +50,9 @@
               <tr>
                 <td>{{ $link->id }}</td>
                 <td>
-                  <a href="{{ url($link->code) }}" target="_blank">{{ url($link->code) }}</a>
+                  <a href="{{ url($link->shortcode) }}" target="_blank">{{ url($link->shortcode) }}</a>
                 </td>
-                <td>{{ $link->link }}</td>
+                <td>{{ $link->url }}</td>
               </tr>
               @endforeach
             </tbody>

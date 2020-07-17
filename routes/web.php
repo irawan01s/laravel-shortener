@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::get('/', 'ShortLinkController@index');
-Route::post('generate-shorten', 'ShortLinkController@store');
+Route::post('shorten', 'ShortLinkController@store');
 
 Route::get('{code}', 'ShortLinkController@shortenLink');
 // Route::get('{code}', 'ShortLinkController@linkJson');
