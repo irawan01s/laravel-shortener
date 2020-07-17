@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
 use App\ShortLink;
 
@@ -22,18 +21,35 @@ class ShortLinkController extends Controller
             'link' => 'required|url'
         ]);
 
-        $input['link'] = $request->link;
-        $input['code'] = Str::random(6);
+        $regexp = "/^[0-9a-zA-Z_]{6}$/";
+        $shortCode = Str::random(6);
+        // $shortCode = 'aHm6BO';
 
-        ShortLink::create($input);
+        // if (preg_match($regexp, $shortCode))
+        // {
+        //     $res = json_encode(['shortcode' => $shortCode]);
+        //     $rescode = 201;
+        // } else {
+        //     $msg = 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$.';
+        //     $res = json_encode(['error' => $msg]);
+        //     $rescode = 422;
+        // }
 
-        return redirect('generate-shorten')->with('success', 'Shorten Link Generated Successfully!');
+        // $input['link'] = $request->link;
+        // $input['code'] = $shortCode;
+        if ($this->cekLink($shortCode)) {
+            
+        }
+        // return $res;
+        // ShortLink::create($input);
+        // return response($res, $rescode)->header('Content-Type', 'application/json');
+        // return redirect('/')->with('success', 'Shorten Link Generated Successfully!');
     }
 
     public function shortenLink($code)
     {
         $find = ShortLink::where('code', $code)->first();
-        dd($find);
+        // dd($find);
         return redirect($find->link);
     }
 
@@ -41,6 +57,22 @@ class ShortLinkController extends Controller
     {
         $find = ShortLink::where('code', $code)->first();
         $res = json_encode(['shortcode' => $find->code]);
-         return response($res,201)->header('Content-Type', 'application/json');
+        
+        return response($res,201)->header('Content-Type', 'application/json');
+    }
+
+    public function cekLink($shortLink)
+    {
+        $cekCode = ShortLink::where('code', $shortLink)->first();
+        // dd($cekCode);
+        return isset($cekCode);
+
+        // if (@$cekCode->code == $shortLink) {
+        //     return 'Ada '.$shortLink;
+        // } else {
+        //     return 'Tidak Ada '.$shortLink;
+        // }
+        // return @$cekCode->code == $shortLink;
+        // dd($cekCode);
     }
 }

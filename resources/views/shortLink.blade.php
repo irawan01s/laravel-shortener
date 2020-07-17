@@ -20,8 +20,8 @@
     <form method="POST" action="{{ url('generate-shorten') }}">
       @csrf
       <div class="input-group mb-3">
-        <input type="text" name="link" class="form-control{{ $errors->has('link') ? 'is-invalid' : '' }}" placeholder="Input Link" aria-label="Input Link"
-          aria-describedby="btn-input-url" value="{{ old('link') }}">
+        <input type="text" name="link" class="form-control{{ $errors->has('link') ? ' is-invalid' : '' }}"
+          placeholder="Input Link" aria-label="Input Link" aria-describedby="btn-input-url" value="{{ old('link') }}">
         <div class="input-group-append">
           <button class="btn btn-primary" type="submit" id="btn-input-url">Generate Link</button>
         </div>
@@ -36,27 +36,28 @@
           <p>{{ Session::get('success') }}</p>
         </div>
         @endif
-
-        <table class="table table-striped table-sm">
-          <thead class="thead-dark">
-            <tr>
-              <th>ID</th>
-              <th>Short Link</th>
-              <th>Link</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach($shortLinks as $link)
-            <tr>
-              <td>{{ $link->id }}</td>
-              <td>
-                <a href="{{ url($link->code) }}" target="_blank">{{ url($link->code) }}</a>
-              </td>
-              <td>{{ $link->link }}</td>
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
+        <div class="table-responsive-lg">
+          <table class="table table-striped table-sm">
+            <thead class="thead-dark text-center">
+              <tr>
+                <th>Id</th>
+                <th>Short Link</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($shortLinks as $link)
+              <tr>
+                <td>{{ $link->id }}</td>
+                <td>
+                  <a href="{{ url($link->code) }}" target="_blank">{{ url($link->code) }}</a>
+                </td>
+                <td>{{ $link->link }}</td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
