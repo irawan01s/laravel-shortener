@@ -30,11 +30,12 @@ class ShortLinkController extends Controller
         $resCode = 201;
         
         $existCode = ShortLink::where('shortcode', $shortCode)->count();
-        $validUrl  = $this->cekUrl($request->input('link'));
-        // dd($validUrl);
+        $reqUrl = Http::get($request->link)->ok();
+
+        // dd($reqUrl);
         // dd($existCode);
 
-        if ($this->cekUrl($request->link) == 400) {
+        if (!$reqUrl) {
             $msg = 'url is not present';
             $res = json_encode(['error' => $msg]);
             $resCode = 400;       
@@ -67,13 +68,10 @@ class ShortLinkController extends Controller
         return redirect($find->url);
     }
 
-    private function cekUrl($url)
-    {
-        // $url  = 'https://www.dewaweb.com/blog/error-404-not-found-apa-maksudnya-dan-cara-mengatasinya/';
-        $data = Http::get($url);
-        $res  = $data->status();
+    public function destroy($id) {
+        $link = ShortLink::find($id);
+        $link->delete();
 
-
-        return $res;
+        return redirect('/')->with('success', 'Data berhasil dihapus!');
     }
 }

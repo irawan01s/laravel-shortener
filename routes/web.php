@@ -21,4 +21,5 @@ Route::get('/', 'ShortLinkController@index');
 Route::post('shorten', 'ShortLinkController@store');
 
 Route::get('{code}', 'ShortLinkController@shortenLink');
+Route::get('shorten/{id}', 'ShortLinkController@destroy');
 // Route::get('{code}', 'ShortLinkController@linkJson');
