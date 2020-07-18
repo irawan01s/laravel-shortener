@@ -23,37 +23,40 @@ class ShortLinkController extends Controller
         ]);
 
         $regexp    = "/^[0-9a-zA-Z_]{6}$/";
-        // $shortCode = Str::random(6);
-        $shortCode = 'utoVTA';
+        $shortCode = Str::random(6);
+        // $shortCode = 'utoVT';
 
         $res = json_encode(['shortcode' => $shortCode]);
-        $rescode = 201;
+        $resCode = 201;
         
-        $existCode = $this->cekCode($shortCode);
-        dd($this->cekUrl($request->link));
+        $existCode = ShortLink::where('shortcode', $shortCode)->count();
+        $validUrl  = $this->cekUrl($request->input('link'));
+        // dd($validUrl);
         // dd($existCode);
 
         if ($this->cekUrl($request->link) == 400) {
             $msg = 'url is not present';
             $res = json_encode(['error' => $msg]);
-            $rescode = 400;       
-        } else if ($existCode) {
+            $resCode = 400;       
+        } else if ($existCode >= 1) {
             $msg = 'The desired shortcode is already in use. Shortcodes are case-sensitive.';
             $res = json_encode(['error' => $msg]);
-            $rescode = 409;
+            $resCode = 409;
         } else if (!preg_match($regexp, $shortCode)) {
             $msg = 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$.';
             $res = json_encode(['error' => $msg]);
-            $rescode = 422;
+            $resCode = 422;
         } else {
             $input['url']       = $request->link;
-            $input['shortcode'] = $shortCode;
-    
+            $input['shortcode'] = $shortCode;    
             ShortLink::create($input);
+
+            $res = json_encode(['shortcode' => $shortCode]);
+            $resCode = 201;
         }
 
 
-        return response($res, $rescode)->header('Content-Type', 'application/json');
+        return response($res, $resCode)->header('Content-Type', 'application/json');
         // return redirect('/')->with('success', 'Shorten Link Generated Successfully!');
     }
 
@@ -63,22 +66,14 @@ class ShortLinkController extends Controller
 
         return redirect($find->url);
     }
-    
-    private function cekCode($shortCode)
-    {
-        $code = ShortLink::where('shortcode', $shortCode)->get();
-        
-        if (@$cekCode->code == $shortCode) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     private function cekUrl($url)
     {
+        // $url  = 'https://www.dewaweb.com/blog/error-404-not-found-apa-maksudnya-dan-cara-mengatasinya/';
         $data = Http::get($url);
+        $res  = $data->status();
 
-        return $data->status();
+
+        return $res;
     }
 }
