@@ -13,7 +13,7 @@ class ShortLinkController extends Controller
     {
         $shortLinks = ShortLink::latest()->get();
 
-        return view('shortLink', compact('shortLinks'));
+        return view('short_link', compact('shortLinks'));
     }
 
     public function store(Request $request)
@@ -30,7 +30,7 @@ class ShortLinkController extends Controller
         $resCode = 201;
         
         $existCode = ShortLink::where('shortcode', $shortCode)->count();
-        $reqUrl = Http::get($request->link)->ok();
+        $reqUrl = Http::timeout(5)->get($request->link)->ok();
 
         // dd($reqUrl);
         // dd($existCode);
@@ -61,7 +61,7 @@ class ShortLinkController extends Controller
         // return redirect('/')->with('success', 'Shorten Link Generated Successfully!');
     }
 
-    public function shortenLink($code)
+    public function show($code)
     {
         $find = ShortLink::where('shortcode', $code)->first();
 

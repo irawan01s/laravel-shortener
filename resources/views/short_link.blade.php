@@ -17,7 +17,7 @@
   <div class="container">
 
     <h1 class="d-flex justify-content-center mt-5">Shortener URL Laravel 7</h1>
-    <form method="POST" action="{{ url('shorten') }}">
+    <form method="POST" action="{{ route('shorten.store') }}">
       @csrf
       <div class="input-group mx-auto col-8 mb-3 mt-5">
         <input type="text" name="link" class="form-control{{ $errors->has('link') ? ' is-invalid' : '' }}"
@@ -32,7 +32,7 @@
     <div class="card shadow">
       <div class="card-body">
         @if (Session::has('success'))
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
           {{ Session::get('success') }}
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -40,13 +40,13 @@
         </div>
         @endif
         <div class="table-responsive-lg">
-          <table class="table table-striped table-sm">
-            <thead class="thead-dark">
+          <table class="table table-striped">
+            <thead>
               <tr>
-                <th>Id</th>
-                <th>Short Link</th>
-                <th>Link</th>
-                <th class="text-center">Action</th>
+                <th scope="row">Id</th>
+                <th scope="row" class="w-25">Short Link</th>
+                <th scope="row" class="w-75">Link</th>
+                <th class="text-center w-25">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -54,10 +54,15 @@
               <tr>
                 <td>{{ $link->id }}</td>
                 <td>
-                  <a href="{{ url($link->shortcode) }}" target="_blank">{{ url($link->shortcode) }}</a>
+                  <a href="{{ route('shorten.show', $link->shortcode) }}" target="_blank">{{ $link->shortcode }}</a>
                 </td>
                 <td>{{ $link->url }}</td>
-                <td> <a href="{{ url('shorten/'.$link->id) }}" class="btn btn-outline-danger"><i class="fas fa-trash"></i></a>
+                <td> 
+                  <form action="{{ route('shorten.destroy', $link->id)}}" method="post">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-outline-danger" type="submit"><i class="fas fa-trash"></i></button>
+                  </form>
                 </td>
               </tr>
               @endforeach
