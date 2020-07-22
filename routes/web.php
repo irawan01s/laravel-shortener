@@ -13,5 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/', function () {
+//       return view('welcome');
+// });
+
 Route::get('/', 'ShortLinkController@index');
-Route::resource('shorten', 'ShortLinkController')->except(['create', 'edit', 'update']);
+Route::post('shorten', 'ShortLinkController@store')->name('shorten.store');
+Route::get('{shorten}', 'ShortLinkController@show')->name('shorten.show');
+Route::delete('{shorten}', 'ShortLinkController@destroy')->name('shorten.destroy');
+Route::get('{shorten}/stats', 'ShortLinkController@stats')->name('shorten.stats');
+// Route::resource('shorten', 'ShortLinkController')->except(['create', 'update']);

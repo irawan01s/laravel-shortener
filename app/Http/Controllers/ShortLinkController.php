@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use App\ShortLink;
 
+
 class ShortLinkController extends Controller
 {
     public function index()
@@ -30,7 +31,7 @@ class ShortLinkController extends Controller
         $resCode = 201;
         
         $existCode = ShortLink::where('shortcode', $shortCode)->count();
-        $reqUrl = Http::timeout(5)->get($request->link)->ok();
+        $reqUrl = Http::timeout(15)->get($request->link);
 
         // dd($reqUrl);
         // dd($existCode);
@@ -48,8 +49,9 @@ class ShortLinkController extends Controller
             $res = json_encode(['error' => $msg]);
             $resCode = 422;
         } else {
-            $input['url']       = $request->link;
-            $input['shortcode'] = $shortCode;    
+            $input['shortcode']      = $shortCode;
+            $input['url']            = $request->link;
+            $input['redirect_count'] = 1;
             ShortLink::create($input);
 
             $res = json_encode(['shortcode' => $shortCode]);
@@ -64,8 +66,34 @@ class ShortLinkController extends Controller
     public function show($code)
     {
         $find = ShortLink::where('shortcode', $code)->first();
+        if ($find) {
+            $find->redirect_count += 1;
+            $find->save();
 
-        return redirect($find->url);
+            return redirect($find->url);
+        } else {
+            $msg = 'The shortcode cannot be found in the system.';
+            $res = json_encode(['error' => $msg]);
+            $resCode = 404;
+
+            return response($res, $resCode)->header('Content-Type', 'application/json');
+        }
+    }
+
+    public function stats($code)
+    {
+        $find = ShortLink::where('shortcode', $code)->first();
+        if ($find) {
+            $msg = 'The shortcode cannot be found in the system.';
+            $res = json_encode(['startDate' => $find->created_at->toDateTimeString(), 'lastSeenDate' => $find->updated_at->toDateTimeString(), 'redirectCount' => $find->redirect_count]);
+            $resCode = 200;
+
+        } else {
+            $msg = 'The shortcode cannot be found in the system.';
+            $res = json_encode(['error' => $msg]);
+            $resCode = 404;
+        }
+        return response($res, $resCode)->header('Content-Type', 'application/json');
     }
 
     public function destroy($id) {

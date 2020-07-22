@@ -17,6 +17,7 @@ class CreateShortLinksTable extends Migration
             $table->id();
             $table->string('shortcode');
             $table->string('url');
+            $table->integer('redirect_count');
             $table->timestamps();
         });
     }
