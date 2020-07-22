@@ -85,7 +85,7 @@ class ShortLinkController extends Controller
         $find = ShortLink::where('shortcode', $code)->first();
         if ($find) {
             $msg = 'The shortcode cannot be found in the system.';
-            $res = json_encode(['startDate' => $find->created_at->toISOString(), 'lastSeenDate' => $find->updated_at->toDateTimeString(), 'redirectCount' => $find->redirect_count]);
+            $res = json_encode(['startDate' => $find->created_at->toIso8601ZuluString(), 'lastSeenDate' => $find->updated_at->toDateTimeString(), 'redirectCount' => $find->redirect_count]);
             $resCode = 200;
 
         } else {
