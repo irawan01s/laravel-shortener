@@ -26,9 +26,6 @@ class ShortLinkController extends Controller
         $regexp    = "/^[0-9a-zA-Z_]{6}$/";
         $shortCode = Str::random(6);
         // $shortCode = 'utoVT';
-
-        $res = json_encode(['shortcode' => $shortCode]);
-        $resCode = 201;
         
         $existCode = ShortLink::where('shortcode', $shortCode)->count();
         $reqUrl = Http::timeout(15)->get($request->link);
@@ -38,15 +35,15 @@ class ShortLinkController extends Controller
 
         if (!$reqUrl) {
             $msg = 'url is not present';
-            $res = json_encode(['error' => $msg]);
+            $res = ['error' => $msg];
             $resCode = 400;       
         } else if ($existCode >= 1) {
             $msg = 'The desired shortcode is already in use. Shortcodes are case-sensitive.';
-            $res = json_encode(['error' => $msg]);
+            $res = ['error' => $msg];
             $resCode = 409;
         } else if (!preg_match($regexp, $shortCode)) {
             $msg = 'The shortcode fails to meet the following regexp: ^[0-9a-zA-Z_]{4,}$.';
-            $res = json_encode(['error' => $msg]);
+            $res = ['error' => $msg];
             $resCode = 422;
         } else {
             $input['shortcode']      = $shortCode;
@@ -54,12 +51,11 @@ class ShortLinkController extends Controller
             $input['redirect_count'] = 1;
             ShortLink::create($input);
 
-            $res = json_encode(['shortcode' => $shortCode]);
+            $res = ['shortcode' => $shortCode];
             $resCode = 201;
         }
 
-
-        return response($res, $resCode)->header('Content-Type', 'application/json');
+        return response()->json($res, $resCode)->header('Content-Type', 'application/json');
         // return redirect('/')->with('success', 'Shorten Link Generated Successfully!');
     }
 
@@ -73,10 +69,10 @@ class ShortLinkController extends Controller
             return redirect($find->url);
         } else {
             $msg = 'The shortcode cannot be found in the system.';
-            $res = json_encode(['error' => $msg]);
+            $res = ['error' => $msg];
             $resCode = 404;
 
-            return response($res, $resCode)->header('Content-Type', 'application/json');
+            return response()->json($res, $resCode)->header('Content-Type', 'application/json');
         }
     }
 
@@ -85,15 +81,15 @@ class ShortLinkController extends Controller
         $find = ShortLink::where('shortcode', $code)->first();
         if ($find) {
             $msg = 'The shortcode cannot be found in the system.';
-            $res = json_encode(['startDate' => $find->created_at->toIso8601ZuluString(), 'lastSeenDate' => $find->updated_at->toDateTimeString(), 'redirectCount' => $find->redirect_count]);
+            $res = ['startDate' => $find->created_at->toIso8601ZuluString(), 'lastSeenDate' => $find->updated_at->toDateTimeString(), 'redirectCount' => $find->redirect_count];
             $resCode = 200;
 
         } else {
             $msg = 'The shortcode cannot be found in the system.';
-            $res = json_encode(['error' => $msg]);
+            $res = ['error' => $msg];
             $resCode = 404;
         }
-        return response($res, $resCode)->header('Content-Type', 'application/json');
+        return response()->json($res, $resCode)->header('Content-Type', 'application/json');
     }
 
     public function destroy($id) {
